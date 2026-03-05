@@ -102,7 +102,12 @@ class AccountRepository:
         return result.all()
 
     async def get_transactions_for_account(
-        self, account_id: UUID, date_from: datetime | None = None, date_to: datetime | None = None,
+        self,
+        account_id: UUID,
+        limit: int,
+        offset: int,
+        date_from: datetime | None = None,
+        date_to: datetime | None = None,
     ) -> list[OrmTransaction]:
 
         entry_exists = (
@@ -124,10 +129,12 @@ class AccountRepository:
         if date_to is not None:
             stmt = stmt.where(OrmTransaction.created_at <= date_to)
 
+        stmt = stmt.limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
-    
+
     async def get_accounts_by_ids(self, account_ids: list[UUID]) -> list[OrmAccount]:
         stmt = select(OrmAccount).where(OrmAccount.id.in_(account_ids))
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
+    

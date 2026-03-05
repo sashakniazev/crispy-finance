@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_session
@@ -45,6 +45,10 @@ async def get_account_transactions(
     account_id: UUID,
     date_from: datetime | None = None,
     date_to: datetime | None = None,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
     service: AccountsService = Depends(_get_accounts_service),
 ) -> list[TransactionResponse]:
-    return await service.get_account_transactions(account_id, date_from, date_to)
+    return await service.get_account_transactions(
+        account_id, limit, offset, date_from, date_to
+    )

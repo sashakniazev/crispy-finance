@@ -61,7 +61,12 @@ class AccountsService:
         )
 
     async def get_account_transactions(
-        self, account_id: UUID, date_from: datetime | None = None, date_to: datetime | None = None,
+        self,
+        account_id: UUID,
+        limit: int,
+        offset: int,
+        date_from: datetime | None = None,
+        date_to: datetime | None = None,
     ) -> list[TransactionResponse]:
         account = await self.repo.get_by_id(account_id)
         if account is None:
@@ -70,5 +75,8 @@ class AccountsService:
                 detail=f"Account '{account_id}' not found",
             )
 
-        txs = await self.repo.get_transactions_for_account(account_id, date_from, date_to)
+        txs = await self.repo.get_transactions_for_account(
+            account_id, limit, offset, date_from, date_to
+        )
         return [TransactionResponse.model_validate(tx) for tx in txs]
+    
