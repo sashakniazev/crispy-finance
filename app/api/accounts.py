@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
@@ -42,6 +43,8 @@ async def get_account(
 @router.get("/{account_id}/transactions", response_model=list[TransactionResponse])
 async def get_account_transactions(
     account_id: UUID,
+    date_from: datetime | None = None,
+    date_to: datetime | None = None,
     service: AccountsService = Depends(_get_accounts_service),
 ) -> list[TransactionResponse]:
-    return await service.get_account_transactions(account_id)
+    return await service.get_account_transactions(account_id, date_from, date_to)

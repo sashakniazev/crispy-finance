@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
@@ -101,7 +102,7 @@ class AccountRepository:
         return result.all()
 
     async def get_transactions_for_account(
-        self, account_id: UUID
+        self, account_id: UUID, date_from: datetime | None = None, date_to: datetime | None = None,
     ) -> list[OrmTransaction]:
 
         entry_exists = (
@@ -116,6 +117,12 @@ class AccountRepository:
             .options(selectinload(OrmTransaction.entries))
             .order_by(OrmTransaction.created_at.desc())
         )
+
+        if date_from is not None:
+            stmt = stmt.where(OrmTransaction.created_at >= date_from)
+
+        if date_to is not None:
+            stmt = stmt.where(OrmTransaction.created_at <= date_to)
 
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
