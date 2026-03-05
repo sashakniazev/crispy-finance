@@ -178,6 +178,43 @@ For local setup — same commands without `docker compose exec app`.
 
 ---
 
+## Testing
+
+Tests use a real PostgreSQL instance on `localhost`. The test database is created automatically.
+
+**Requirements:** PostgreSQL running locally, test dependencies installed.
+
+Sample test files are provided with the `sample.` prefix and must be renamed before running:
+
+```bash
+# Rename sample test files
+for f in tests/sample.*.py; do mv "$f" "tests/${f#tests/sample.}"; done
+```
+
+```bash
+# Install dependencies (if not already done)
+pip install -r requirements.txt
+
+# Run all tests
+pytest
+
+# Run with verbose output
+pytest -v
+```
+
+### Environment Variables
+
+By default the test DB name is derived from `DB_DATABASE` with a `_test` suffix (e.g. `postgres_test`). Override if needed:
+
+| Variable       | Default                      | Description              |
+|----------------|------------------------------|--------------------------|
+| `TEST_DB_URL`  | auto-built from settings     | Full test DB URL         |
+| `TEST_DB_NAME` | `{DB_DATABASE}_test`         | Test database name       |
+
+The DB credentials (`DB_USERNAME`, `DB_PASSWORD`) are taken from your `.env` file.
+
+---
+
 ## API
 
 After starting, the following are available:

@@ -26,4 +26,4 @@ class TransactionRepository:
             .where(OrmTransaction.id == transaction_id)
         )
         result = await self.session.execute(stmt)
-        return result.scalars().one()
+        return result.scalars().first()
